@@ -78,6 +78,7 @@ nav a {
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-align: center;
 }
 
 .button.primary {
@@ -91,21 +92,124 @@ nav a {
   transform: scale(1.05);
 }
 
-/* Grid layout for specials and testimonials */
-.specials-grid,
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+/* Specials Section */
+.specials-section {
+  padding: 4rem 5%;
+  background-color: #f4f4f4;
 }
 
-/* Cards */
-.special-card,
-.testimonial-card {
-  border: 1px solid #ddd;
+.specials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.specials-header h2 {
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.online-menu-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #F4CE14;
+  color: #333;
+  border: none;
+  border-radius: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.online-menu-button:hover {
+  background-color: #ddb90f;
+  transform: translateY(-2px);
+}
+
+.specials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.special-card {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.special-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.special-card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #495E57;
+}
+
+.price {
+  color: #EE9972;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.description {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.order-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 1px solid #495E57;
   border-radius: 8px;
-  padding: 1rem;
+  color: #495E57;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.order-button:hover {
+  background-color: #495E57;
+  color: white;
+}
+
+.delivery-icon {
+  font-size: 1.2rem;
 }
 
 /* Footer */
