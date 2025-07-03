@@ -12,16 +12,16 @@ const Footer = () => {
       <div className="footer-links">
         <h4>Contract</h4>
         <ul>
-          <li>Adversy</li>
-          <li>Aligned member email</li>
+          <li>Phone number: +1 234 567 89</li>
+          <li>Email: little@lemon.com</li>
         </ul>
       </div>
       <div className="footer-links">
         <h4>Social Links</h4>
         <ul>
-          <li>Adversy</li>
-          <li>phone number</li>
-          <li>email</li>
+          <li>Instagram</li>
+          <li>Threads</li>
+          <li>LinkedIn</li>
         </ul>
       </div>
     </footer>
