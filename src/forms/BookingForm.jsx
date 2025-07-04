@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useReducer } from 'react';
+import { initializeTimes, updateTimes } from '../reducers/bookingReducer';
 
 const BookingForm = ( onSubmit ) => {
-    // State for form fields
+
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -12,10 +14,8 @@ const BookingForm = ( onSubmit ) => {
   // State for validation errors
   const [errors, setErrors] = useState({});
 
-  // Available times for reservation
-  const [availableTimes] = useState([
-    '17:00', '18:00', '19:00', '20:00', '21:00'
-  ]);
+  // State for available times using reducer
+  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -24,6 +24,11 @@ const BookingForm = ( onSubmit ) => {
       ...prev,
       [name]: value
     }));
+
+    // Dispatch action when date changes
+    if (name === 'date') {
+      dispatch({ type: 'SET_DATE', date: value });
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -54,95 +59,110 @@ const BookingForm = ( onSubmit ) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+// Handle form submission
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (validateForm()) {
+  if (validateForm()) {
+    // Add small delay to simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    // Call the onSubmit prop passed from parent
+    if (typeof onSubmit === 'function') {
       onSubmit(formData);
-      // Reset form after submission
-      setFormData({
-        date: '',
-        time: '',
-        guests: 1,
-        occasion: 'None'
-      });
     }
-  };
+
+    // Reset form after submission
+    setFormData({
+      date: '',
+      time: '',
+      guests: 1,
+      occasion: 'None'
+    });
+  }
+};
 
   // Get today's date in YYYY-MM-DD format for min attribute
   const today = new Date().toISOString().split('T')[0];
 
-    return (
-        <div className="booking-form-container">
-          <h2>Reserve Your Table</h2>
-          <form onSubmit={handleSubmit} className="booking-form">
-            <div className="form-group">
-              <label htmlFor="date">Choose date</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                min={today}
-                className={errors.date ? 'error' : ''}
-              />
-              {errors.date && <p className="error-message">{errors.date}</p>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="time">Choose time</label>
-              <select
-                id="time"
-                name="time"
-                value={formData.time}
-                onChange={handleChange}
-                className={errors.time ? 'error' : ''}
-              >
-                <option value="">Select a time</option>
-                {availableTimes.map(time => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
-              {errors.time && <p className="error-message">{errors.time}</p>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="guests">Number of guests</label>
-              <input
-                type="number"
-                id="guests"
-                name="guests"
-                min="1"
-                max="10"
-                value={formData.guests}
-                onChange={handleChange}
-                className={errors.guests ? 'error' : ''}
-              />
-              {errors.guests && <p className="error-message">{errors.guests}</p>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="occasion">Occasion</label>
-              <select
-                id="occasion"
-                name="occasion"
-                value={formData.occasion}
-                onChange={handleChange}
-              >
-                <option value="None">None</option>
-                <option value="Birthday">Birthday</option>
-                <option value="Anniversary">Anniversary</option>
-              </select>
-            </div>
-
-            <button type="submit" className="submit-btn">
-              Reserve Table
-            </button>
-          </form>
+  return (
+    <div className="booking-form-container">
+      <h2>Reserve Your Table</h2>
+      <form onSubmit={handleSubmit} className="booking-form">
+        <div className="form-group">
+          <label htmlFor="date">Choose date</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            min={today}
+            className={errors.date ? 'error' : ''}
+            data-testid="date-input"
+          />
+          {errors.date && <p className="error-message">{errors.date}</p>}
         </div>
-      );
-    }
 
-    export default BookingForm;
+        <div className="form-group">
+          <label htmlFor="time">Choose time</label>
+          <select
+            id="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            className={errors.time ? 'error' : ''}
+            data-testid="time-select"
+          >
+            <option value="">Select a time</option>
+            {availableTimes.map(time => (
+              <option key={time} value={time} data-testid="time-option">{time}</option>
+            ))}
+          </select>
+          {errors.time && <p className="error-message">{errors.time}</p>}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="guests">Number of guests</label>
+          <input
+            type="number"
+            id="guests"
+            name="guests"
+            min="1"
+            max="10"
+            value={formData.guests}
+            onChange={handleChange}
+            className={errors.guests ? 'error' : ''}
+            data-testid="guests-input"
+          />
+          {errors.guests && <p className="error-message">{errors.guests}</p>}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="occasion">Occasion</label>
+          <select
+            id="occasion"
+            name="occasion"
+            value={formData.occasion}
+            onChange={handleChange}
+            data-testid="occasion-select"
+          >
+            <option value="None">None</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Anniversary">Anniversary</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="submit-btn"
+          data-testid="submit-btn"
+        >
+          Reserve Table
+        </button>
+      </form>
+    </div>
+  );
+}
+
+export default BookingForm;
