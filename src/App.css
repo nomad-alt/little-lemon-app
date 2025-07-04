@@ -548,3 +548,139 @@ nav a {
     grid-column: span 1;
   }
 }
+
+/* Booking Page Styles */
+.booking-page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.booking-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.booking-header h1 {
+  color: #495E57;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.booking-header p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.booking-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 768px) {
+  .booking-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Booking Form Styles */
+.booking-form-container {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.booking-form-container h2 {
+  margin-top: 0;
+  color: #495E57;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #495E57;
+  box-shadow: 0 0 0 2px rgba(73, 94, 87, 0.2);
+}
+
+.form-group input.error,
+.form-group select.error {
+  border-color: #e63946;
+}
+
+.error-message {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.submit-btn {
+  background-color: #F4CE14;
+  color: #333;
+  border: none;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background-color: #ddb90f;
+  transform: translateY(-2px);
+}
+
+/* Booking Info Styles */
+.booking-info {
+  background-color: #EDEFEE;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.booking-info h3 {
+  margin-top: 0;
+  color: #495E57;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.booking-info ul {
+  padding-left: 1.5rem;
+}
+
+.booking-info li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
