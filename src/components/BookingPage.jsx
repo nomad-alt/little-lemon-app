@@ -1,14 +1,33 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BookingForm from '../forms/BookingForm';
 import ErrorBoundary from './ErrorBoundary';
 
 const BookingPage = () => {
-  const [bookingData, setBookingData] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (formData) => {
-    setBookingData(formData);
-    setIsSubmitted(true);
+  const handleSubmit = async (formData) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Submit to API (with fallback for development)
+      const isSuccess = window.submitAPI?.(formData) ?? true;
+
+      if (isSuccess) {
+        // Navigate to confirmation page with booking data
+        navigate('/confirmed', { state: { booking: formData } });
+      } else {
+        setError('Failed to submit booking. Please try again.');
+      }
+    } catch (err) {
+      console.error('Booking submission error:', err);
+      setError('An error occurred. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -19,27 +38,13 @@ const BookingPage = () => {
       </div>
 
       <div className="booking-container">
-        {isSubmitted ? (
-          <div className="confirmation">
-            <h2>Reservation Confirmed!</h2>
-            <div className="confirmation-details">
-              <p><strong>Date:</strong> {bookingData.date}</p>
-              <p><strong>Time:</strong> {bookingData.time}</p>
-              <p><strong>Guests:</strong> {bookingData.guests}</p>
-              <p><strong>Occasion:</strong> {bookingData.occasion || 'None'}</p>
-            </div>
-            <button
-              className="new-reservation-btn"
-              onClick={() => setIsSubmitted(false)}
-            >
-              Make Another Reservation
-            </button>
-          </div>
-        ) : (
-          <ErrorBoundary>
-            <BookingForm onSubmit={handleSubmit} />
-          </ErrorBoundary>
-        )}
+        <ErrorBoundary>
+          <BookingForm
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            error={error}
+          />
+        </ErrorBoundary>
 
         <div className="booking-info">
           <h3>Reservation Information</h3>
@@ -57,6 +62,6 @@ const BookingPage = () => {
       </div>
     </div>
   );
-}
+};
 
 export default BookingPage;

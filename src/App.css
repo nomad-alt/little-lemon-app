@@ -684,3 +684,53 @@ nav a {
   margin-bottom: 1rem;
   line-height: 1.6;
 }
+
+.confirmed-booking {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #edefee;
+  border-radius: 16px;
+}
+
+.confirmed-booking h1 {
+  color: #495e57;
+  margin-bottom: 1.5rem;
+}
+
+.confirmation-details {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.confirmation-details h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.confirmation-details p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.confirmation-details strong {
+  color: #495e57;
+}
+
+.confirmation-message {
+  font-size: 1.2rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #495e57;
+}

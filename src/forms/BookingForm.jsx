@@ -1,5 +1,6 @@
 import { useState, useReducer, useEffect } from 'react';
 
+// Development mock API
 // eslint-disable-next-line no-undef
 if (process.env.NODE_ENV === 'development' && !window.fetchAPI) {
   console.log('Using mock API for development');
@@ -12,7 +13,7 @@ if (process.env.NODE_ENV === 'development' && !window.fetchAPI) {
   window.submitAPI = () => true;
 }
 
-const BookingForm = ( onSubmit ) => {
+const BookingForm = ({ onSubmit, isLoading = false }) => {
   // State for form fields
   const [formData, setFormData] = useState({
     date: '',
@@ -23,11 +24,21 @@ const BookingForm = ( onSubmit ) => {
 
   // State for validation errors
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState(null);
 
   // Initialize times reducer function
   const initializeTimes = () => {
-    const today = new Date();
-    return window.fetchAPI(today) || ['17:00', '18:00', '19:00', '20:00', '21:00'];
+    try {
+      const today = new Date();
+      if (typeof window.fetchAPI === 'function') {
+        const times = window.fetchAPI(today);
+        return Array.isArray(times) ? times : ['17:00', '18:00', '19:00', '20:00', '21:00'];
+      }
+      return ['17:00', '18:00', '19:00', '20:00', '21:00'];
+    } catch (error) {
+      console.error('Error initializing times:', error);
+      return ['17:00', '18:00', '19:00', '20:00', '21:00'];
+    }
   };
 
   // Update times reducer function
@@ -35,8 +46,11 @@ const BookingForm = ( onSubmit ) => {
     switch (action.type) {
       case 'SET_DATE':
         try {
-          // Fetch available times for the selected date
-          return window.fetchAPI(new Date(action.date));
+          if (typeof window.fetchAPI === 'function') {
+            const times = window.fetchAPI(new Date(action.date));
+            return Array.isArray(times) ? times : state;
+          }
+          return state;
         } catch (error) {
           console.error('Error fetching available times:', error);
           return state;
@@ -47,14 +61,13 @@ const BookingForm = ( onSubmit ) => {
   };
 
   // State for available times using reducer
-  const [availableTimes, dispatch] = useReducer(updateTimes, [], () => initializeTimes());
+  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
 
   // Initialize times on component mount
   useEffect(() => {
-    if (window.fetchAPI) {
-      const today = new Date();
-      dispatch({ type: 'SET_DATE', date: today.toISOString().split('T')[0] });
-    }
+    const today = new Date().toISOString().split('T')[0];
+    setFormData(prev => ({ ...prev, date: today }));
+    dispatch({ type: 'SET_DATE', date: today });
   }, []);
 
   // Handle input changes
@@ -68,72 +81,61 @@ const BookingForm = ( onSubmit ) => {
     // Dispatch action when date changes
     if (name === 'date') {
       dispatch({ type: 'SET_DATE', date: value });
-
-      // Clear the time selection when date changes
-      setFormData(prev => ({
-        ...prev,
-        time: ''
-      }));
+      setFormData(prev => ({ ...prev, time: '' }));
     }
 
-    // Clear error when user starts typing
+    // Clear errors when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (apiError) setApiError(null);
   };
 
   // Validate form
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.date) {
-      newErrors.date = 'Please select a date';
-    }
-
-    if (!formData.time) {
-      newErrors.time = 'Please select a time';
-    }
-
+    if (!formData.date) newErrors.date = 'Please select a date';
+    if (!formData.time) newErrors.time = 'Please select a time';
     if (formData.guests < 1 || formData.guests > 10) {
       newErrors.guests = 'Number of guests must be between 1 and 10';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setApiError(null);
 
-    if (validateForm()) {
-      try {
-        // Submit the form data to the API
-        const isSubmitted = window.submitAPI(formData);
+    if (!validateForm()) return;
 
-        if (isSubmitted) {
-          // Call the onSubmit prop passed from parent
-          if (typeof onSubmit === 'function') {
-            onSubmit(formData);
-          }
+    try {
+      // Submit the form data to the API
+      const isSubmitted = typeof window.submitAPI === 'function'
+        ? window.submitAPI(formData)
+        : true; // Fallback for testing
 
-          // Reset form after submission
-          setFormData({
-            date: '',
-            time: '',
-            guests: 1,
-            occasion: 'None'
-          });
-        } else {
-          alert('Failed to submit reservation. Please try again.');
+      if (isSubmitted) {
+        // Call the onSubmit prop passed from parent
+        if (typeof onSubmit === 'function') {
+          await onSubmit(formData);
         }
-      } catch (error) {
-        console.error('Error submitting reservation:', error);
-        alert('An error occurred while submitting your reservation.');
+        // Reset form after successful submission
+        const today = new Date().toISOString().split('T')[0];
+        setFormData({
+          date: today,
+          time: '',
+          guests: 1,
+          occasion: 'None'
+        });
+        dispatch({ type: 'SET_DATE', date: today });
+      } else {
+        setApiError('Failed to submit reservation. Please try again.');
       }
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      setApiError('An error occurred while submitting your reservation.');
     }
   };
 
@@ -143,6 +145,7 @@ const BookingForm = ( onSubmit ) => {
   return (
     <div className="booking-form-container">
       <h2>Reserve Your Table</h2>
+      {apiError && <div className="error-message api-error">{apiError}</div>}
       <form onSubmit={handleSubmit} className="booking-form">
         <div className="form-group">
           <label htmlFor="date">Choose date</label>
@@ -155,6 +158,7 @@ const BookingForm = ( onSubmit ) => {
             min={today}
             className={errors.date ? 'error' : ''}
             data-testid="date-input"
+            required
           />
           {errors.date && <p className="error-message">{errors.date}</p>}
         </div>
@@ -169,6 +173,7 @@ const BookingForm = ( onSubmit ) => {
             className={errors.time ? 'error' : ''}
             data-testid="time-select"
             disabled={!formData.date}
+            required
           >
             <option value="">Select a time</option>
             {availableTimes.map(time => (
@@ -192,6 +197,7 @@ const BookingForm = ( onSubmit ) => {
             onChange={handleChange}
             className={errors.guests ? 'error' : ''}
             data-testid="guests-input"
+            required
           />
           {errors.guests && <p className="error-message">{errors.guests}</p>}
         </div>
@@ -215,13 +221,13 @@ const BookingForm = ( onSubmit ) => {
           type="submit"
           className="submit-btn"
           data-testid="submit-btn"
-          disabled={!formData.date || !formData.time}
+          disabled={isLoading || !formData.date || !formData.time}
         >
-          Reserve Table
+          {isLoading ? 'Submitting...' : 'Reserve Table'}
         </button>
       </form>
     </div>
   );
-}
+};
 
 export default BookingForm;
