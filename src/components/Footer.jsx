@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/Logo.svg';
 import { FaFacebook, FaInstagram, FaYelp, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 

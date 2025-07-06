@@ -82,7 +82,7 @@ To customize this project:
 
 1. Update images in `src/assets/`
 2. Modify content in component files
-3. Adjust colors in `App.css`
+3. Adjust colors in `app.css`
 4. Update restaurant information in the Footer component
 
 ## License
